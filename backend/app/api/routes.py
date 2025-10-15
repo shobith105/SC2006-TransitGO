@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
+from fastapi import HTTPException
+import app.database.dbconfig as dbconfig
 
 router = APIRouter()
 
@@ -11,11 +13,14 @@ async def create_user(user: UserCreate):
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 async def read_user(user_id: int):
-    # Logic to read a user by ID
+    resp = dbconfig.get_specific_user(user_id)
+    return resp.data
     pass
 
 @router.get("/users/", response_model=list[UserResponse])
 async def read_users():
+    resp=supabase.table("users").select("*").execute()
+    return resp.data
     # Logic to read all users
     pass
 
